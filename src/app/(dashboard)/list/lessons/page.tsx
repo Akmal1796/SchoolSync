@@ -1,10 +1,9 @@
-import FormModel from "@/components/FormModel";
+import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { lessonsData, role } from "@/lib/data";
 import Image from "next/image";
-import Link from "next/link";
 
 type Lesson = {
   id: number;
@@ -29,7 +28,7 @@ const columns = [
   },
   {
     header: "Actions",
-    accessor: "actions",
+    accessor: "action",
   },
 ];
 
@@ -46,8 +45,8 @@ const LessonListPage = () => {
         <div className="flex items-center gap-2">
           {role === "admin" && (
             <>
-              <FormModel table="lesson" type="update" data={item} />
-              <FormModel table="lesson" type="delete" id={item.id} />
+              <FormModal table="lesson" type="update" data={item} />
+              <FormModal table="lesson" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -69,7 +68,7 @@ const LessonListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModel table="lesson" type="create" />}
+            {role === "admin" && <FormModal table="lesson" type="create" />}
           </div>
         </div>
       </div>
