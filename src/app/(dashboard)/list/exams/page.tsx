@@ -47,9 +47,13 @@ const renderRow = (item: ExamList) => (
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
   >
     <td className="flex items-center gap-4 p-4">{item.lesson.subject.name}</td>
-    <td>{item.class}</td>
-    <td className="hidden md:table-cell">{item.teacher}</td>
-    <td className="hidden md:table-cell">{item.date}</td>
+    <td>{item.lesson.class.name}</td>
+    <td className="hidden md:table-cell">
+      {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
+    </td>
+    <td className="hidden md:table-cell">
+      {new Intl.DateTimeFormat("en-US").format(item.startTime)}
+    </td>
     <td>
       <div className="flex items-center gap-2">
         {role === "admin" ||
@@ -75,23 +79,26 @@ const ExamListPage = async ({
 
   //URL PARAMS CONDITION
 
-  const query: Prisma.LessonWhereInput = {};
+  const query: Prisma.ExamWhereInput = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
           case "classId":
-            query.classId = parseInt(value);
+            query.lesson = { classId: parseInt(value) };
             break;
           case "teacherId":
-            query.teacherId = value;
+            query.lesson = {
+              teacherId: value,
+            };
             break;
           case "search":
-            query.OR = [
-              { subject: { name: { contains: value, mode: "insensitive" } } },
-              { teacher: { name: { contains: value, mode: "insensitive" } } },
-            ];
+            query.lesson = {
+              subject: {
+                name: { contains: value, mode: "insensitive" },
+              },
+            };
             break;
           default:
             break;
@@ -107,6 +114,8 @@ const ExamListPage = async ({
         lesson: {
           select: {
             subject: { select: { name: true } },
+            teacher: { select: { name: true, surname: true } },
+            class: { select: { name: true } },
           },
         },
       },
@@ -135,9 +144,9 @@ const ExamListPage = async ({
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={examsData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination page={p} count={count} />
     </div>
   );
 };
